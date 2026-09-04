@@ -15,7 +15,10 @@ export const env = {
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? '900000'),
   rateLimitMaxRequests: Number(process.env.RATE_LIMIT_MAX_REQUESTS ?? '100'),
   liveSyncIntervalSeconds: Number(process.env.LIVE_SYNC_INTERVAL_SECONDS ?? '30'),
+  liveSyncIdleIntervalSeconds: Number(process.env.LIVE_SYNC_IDLE_INTERVAL_SECONDS ?? '120'),
   footballApiKey: process.env.FOOTBALL_API_KEY ?? '',
   footballApiBaseUrl: process.env.FOOTBALL_API_BASE_URL ?? '',
   footballProvider: process.env.FOOTBALL_PROVIDER ?? 'mock',
+  footballRateLimitPerMinute: Number(process.env.FOOTBALL_RATE_LIMIT_PER_MINUTE ?? '60'),
+  footballRequestIntervalMs: Number(process.env.FOOTBALL_REQUEST_INTERVAL_MS ?? '1500'),
 }

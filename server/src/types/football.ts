@@ -97,7 +97,18 @@ export interface HeadToHeadRecord {
   lastMeeting: string
 }
 
-export interface MatchDetailData extends FixtureRecord {
+export interface MatchDetailData {
+  id: string
+  homeTeamId: string
+  awayTeamId: string
+  leagueId: string
+  venue: string
+  kickoffAt: string
+  status: MatchStatus
+  minute?: number
+  score?: ScoreLine
+  round?: string
+  referee?: string
   homeTeam: TeamSummary
   awayTeam: TeamSummary
   league: LeagueSummary

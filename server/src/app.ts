@@ -6,9 +6,11 @@ import morgan from 'morgan'
 import { env } from './config/env'
 import { startSyncJobs } from './jobs/syncJobs'
 import { errorHandler, notFoundHandler } from './middleware/errorHandler'
+import authRoutes from './routes/auth'
 import footballRoutes from './routes/football'
 import healthRoutes from './routes/health'
 import matchesRoutes from './routes/matches'
+import personalizedRoutes from './routes/personalized'
 
 const app = express()
 
@@ -31,8 +33,10 @@ const apiLimiter = rateLimit({
 
 app.use('/api', apiLimiter)
 app.use('/api', healthRoutes)
+app.use('/api', authRoutes)
 app.use('/api', footballRoutes)
 app.use('/api', matchesRoutes)
+app.use('/api', personalizedRoutes)
 
 app.get('/', (_req, res) => {
   res.json({ name: 'GoalSphere API', status: 'ready' })

@@ -1,6 +1,23 @@
 import { env } from '../config/env'
 import { MockFootballDataProvider } from './mockFootballDataProvider'
-import type { FootballDataProvider } from '../types/football'
+import type {
+  FixtureRecord,
+  FootballDataProvider,
+  LeagueSummary,
+  MatchDetailData,
+  NewsArticle,
+  StandingRecord,
+  TeamSummary,
+} from '../types/football'
+
+const requestQueue = {
+  lastRequestAt: 0,
+  intervalMs: Math.max(250, env.footballRequestIntervalMs ?? 1500),
+}
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
 
 export class RestFootballDataProvider implements FootballDataProvider {
   readonly name = 'external-provider'
@@ -10,44 +27,74 @@ export class RestFootballDataProvider implements FootballDataProvider {
     private readonly baseUrl: string,
   ) {}
 
-  async getLeagues(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  private async request<T>(path: string): Promise<T[]> {
+    if (!this.apiKey || !this.baseUrl) {
+      return []
+    }
+
+    const now = Date.now()
+    const timeSinceLastRequest = now - requestQueue.lastRequestAt
+
+    if (timeSinceLastRequest < requestQueue.intervalMs) {
+      await sleep(requestQueue.intervalMs - timeSinceLastRequest)
+    }
+
+    requestQueue.lastRequestAt = Date.now()
+
+    try {
+      const response = await fetch(`${this.baseUrl.replace(/\/$/, '')}${path}`, {
+        headers: {
+          'x-api-key': this.apiKey,
+          Accept: 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        console.warn(`Football API request failed for ${path}: ${response.status}`)
+        return []
+      }
+
+      const payload = (await response.json()) as { response?: T[]; data?: T[] }
+      return (payload.response ?? payload.data ?? []) as T[]
+    } catch (error) {
+      console.warn(`Football API request failed for ${path}:`, error)
+      return []
+    }
   }
 
-  async getTeams(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  async getLeagues(): Promise<LeagueSummary[]> {
+    return this.request<LeagueSummary>('/leagues')
   }
 
-  async getLiveMatches(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  async getTeams(): Promise<TeamSummary[]> {
+    return this.request<TeamSummary>('/teams')
   }
 
-  async getFixtures(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  async getLiveMatches(): Promise<FixtureRecord[]> {
+    return this.request<FixtureRecord>('/fixtures?live=all')
   }
 
-  async getResults(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  async getFixtures(): Promise<FixtureRecord[]> {
+    return this.request<FixtureRecord>('/fixtures?status=scheduled')
   }
 
-  async getMatchDetails(): Promise<null> {
+  async getResults(): Promise<FixtureRecord[]> {
+    return this.request<FixtureRecord>('/fixtures?status=ft')
+  }
+
+  async getMatchDetails(matchId: string): Promise<MatchDetailData | null> {
     if (!this.apiKey || !this.baseUrl) return null
-    return null
+
+    const [item] = await this.request<MatchDetailData>(`/fixtures?id=${matchId}`)
+    return item ?? null
   }
 
-  async getStandings(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  async getStandings(): Promise<StandingRecord[]> {
+    return this.request<StandingRecord>('/standings')
   }
 
-  async getNews(): Promise<never[]> {
-    if (!this.apiKey || !this.baseUrl) return []
-    return []
+  async getNews(): Promise<NewsArticle[]> {
+    return this.request<NewsArticle>('/news')
   }
 }
 

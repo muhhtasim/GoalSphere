@@ -1,11 +1,17 @@
+import http from 'node:http'
 import app from './app'
 import { connectDatabase } from './config/db'
 import { env } from './config/env'
+import { initSocketServer } from './socket'
 
 async function startServer(): Promise<void> {
   try {
     await connectDatabase()
-    app.listen(env.port, () => {
+
+    const server = http.createServer(app)
+    initSocketServer(server)
+
+    server.listen(env.port, () => {
       console.log(`GoalSphere API running on http://localhost:${env.port}`)
     })
   } catch (error) {

@@ -35,8 +35,27 @@ export function MatchDetailTabs({ match }: MatchDetailTabsProps) {
 
       {activeTab === 'Overview' && (
         <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-          <MatchTimeline match={match} />
-          <HeadToHeadCard match={match} />
+          <div className="space-y-4">
+            <MatchTimeline match={match} />
+            <StatsTable match={match} />
+          </div>
+          <div className="space-y-4">
+            <HeadToHeadCard match={match} />
+            <div className="rounded-3xl border border-slate-800 bg-slate-900 p-4">
+              <h3 className="mb-3 text-lg font-bold text-white">Match story</h3>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3">
+                  <span className="font-semibold text-white">Momentum:</span> The home side has controlled the pace and created the cleaner chances.
+                </li>
+                <li className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3">
+                  <span className="font-semibold text-white">Threat:</span> Progression down the flanks has been the key channel for both teams.
+                </li>
+                <li className="rounded-2xl border border-slate-800 bg-slate-950/60 p-3">
+                  <span className="font-semibold text-white">Risk:</span> A set-piece could decide the final phase of this match.
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
       )}
 
