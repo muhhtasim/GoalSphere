@@ -8,10 +8,11 @@ export async function connectDatabase(): Promise<void> {
   }
 
   try {
-    await mongoose.connect(env.mongoUri)
+    await mongoose.connect(env.mongoUri, {
+      serverSelectionTimeoutMS: 15000,
+    })
     console.log('MongoDB connected successfully.')
   } catch (error) {
-    console.error('MongoDB connection failed:', error)
-    throw error
+    console.error('MongoDB connection failed. Continuing without database for now:', error)
   }
 }

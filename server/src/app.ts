@@ -12,11 +12,20 @@ import healthRoutes from './routes/health'
 import matchesRoutes from './routes/matches'
 import personalizedRoutes from './routes/personalized'
 
+const allowedOrigins = Array.from(new Set(env.corsOrigins.length ? env.corsOrigins : [env.corsOrigin]))
+
 const app = express()
 
 app.use(
   cors({
-    origin: env.corsOrigin,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true)
+        return
+      }
+
+      callback(new Error(`Origin ${origin} not allowed by CORS`))
+    },
     credentials: true,
   }),
 )

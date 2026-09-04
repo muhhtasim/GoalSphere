@@ -5,6 +5,12 @@ dotenv.config({ path: path.resolve(process.cwd(), '..', '.env') })
 
 dotenv.config()
 
+const parseOrigins = (value?: string): string[] =>
+  (value ?? 'http://localhost:5173')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean)
+
 export const env = {
   port: Number(process.env.PORT ?? '4000'),
   nodeEnv: process.env.NODE_ENV ?? 'development',
@@ -12,6 +18,7 @@ export const env = {
   jwtSecret: process.env.JWT_SECRET ?? 'development-secret',
   clientUrl: process.env.CLIENT_URL ?? 'http://localhost:5173',
   corsOrigin: process.env.CORS_ORIGIN ?? 'http://localhost:5173',
+  corsOrigins: parseOrigins(process.env.CORS_ORIGIN),
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS ?? '900000'),
   rateLimitMaxRequests: Number(process.env.RATE_LIMIT_MAX_REQUESTS ?? '100'),
   liveSyncIntervalSeconds: Number(process.env.LIVE_SYNC_INTERVAL_SECONDS ?? '30'),

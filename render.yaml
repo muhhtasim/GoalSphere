@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: goalsphere-api
+    env: node
+    plan: free
+    region: oregon
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://your-vercel-app.vercel.app
+      - key: CORS_ORIGIN
+        value: https://your-vercel-app.vercel.app
+      - key: MONGODB_URI
+        value: mongodb+srv://muhtasimlabib52_db_user:zMRyh6CBhcpAkb2H@cluster0.cyugm3l.mongodb.net/?appName=Cluster0
+      - key: FOOTBALL_PROVIDER
+        value: mock
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: LIVE_SYNC_INTERVAL_SECONDS
+        value: 30
+      - key: LIVE_SYNC_IDLE_INTERVAL_SECONDS
+        value: 120

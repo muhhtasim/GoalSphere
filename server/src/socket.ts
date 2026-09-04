@@ -4,6 +4,8 @@ import { env } from './config/env'
 
 let io: Server | undefined
 
+const allowedOrigins = Array.from(new Set(env.corsOrigins.length ? env.corsOrigins : [env.corsOrigin]))
+
 export function initSocketServer(httpServer: HttpServer): Server {
   if (io) {
     return io
@@ -11,7 +13,14 @@ export function initSocketServer(httpServer: HttpServer): Server {
 
   io = new Server(httpServer, {
     cors: {
-      origin: env.corsOrigin,
+      origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true)
+          return
+        }
+
+        callback(new Error(`Origin ${origin} not allowed by Socket.IO CORS`))
+      },
       credentials: true,
     },
   })
